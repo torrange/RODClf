@@ -8,5 +8,6 @@ test.jpg
 RODClf_test_filter16-Copy0.ipynb
 RODClf_test_filter19.ipynb
 RODClf_test_filter20.ipynb
+*.ipynb
 RODClf.jl.bak
-dataset/ 
+dataset/

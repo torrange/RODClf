@@ -5,7 +5,7 @@ using Images
 export img_load,
     integral_sum,
     imgobj_extract,
-    ImageFilter,
+    test_filter,
     ImageObject,
     FilterShape,
     FilterGeometry
@@ -29,6 +29,14 @@ type FilterGeometry
 end
 
 
+
+# function img_load(imgpath::String)
+#   f = imread(imgpath)::Image
+#   imgobj = ImageObject(f.properties, f.data, size(f.data))::ImageObject
+#   return imgobj
+# end
+
+
 function img_load(imgpath::String)
   f = separate(imread(imgpath)::Image)
   imgobj = ImageObject(f.properties, f.data, size(f.data))::ImageObject
@@ -45,26 +53,20 @@ function integral_sum(image_array)
   return integral_image
 end
 
+######################################
+# TEST FUNCTIONS FOR FILTER CREATION #
+######################################
 
-function ImageFilter(filter_shape::FilterGeometry, imgobj::ImageObject)
-    dx_resolution = filter_shape.dx_resolution
-    dy_resolution = filter_shape.dy_resolution
-    dx_units = filter_shape.dx_units
-    dy_units = filter_shape.dy_units
-    y_units = filter_shape.x_units
-    x_units = filter_shape.y_units
-    dx = signed(imgobj.ndims[1]/dx_resolution-0.5)
-    dy = signed(imgobj.ndims[2]/dy_resolution-0.5);
-    y_offset = filter_shape.y_offset
-    x_offset = filter_shape.x_offset
-
-    x = Array[]
-    for i in [1:x_units]
-        for j in [1:y_units]
-            push!(x, imgobj.image[((i+y_offset)*dx)-dx+1:(i+y_offset)*dx,((j+x_offset)*dy)-dy+1:(j+x_offset)*dy,:])
-        end
-    end
-    return x
+function test_filter(imgobj::ImageObject, filter::FilterGeometry)
+  properties = imgobj.properties::Dict
+  shape = imgobj.ndims::Tuple
+  dx = signed(shape[2]/filter.filter_shape.dx_resolution)::Signed
+  dy = signed(shape[3]/filter.filter_shape.dy_resolution)::Signed
+  imgA = imgobj.image[:,dx:dx*2, dy:dy*8]::Array
+  imgB = imgobj.image[:,dx*2:dx*3, dy:dy*8]::Array
+  imgA_integral = integral_sum(imgA)::Uint
+  imgB_integral = integral_sum(imgB)::Uint
+  return properties, imgA_integral, imgB_integral
 end
 
 
